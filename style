@@ -1,0 +1,125 @@
+/* ===========================================
+   style.css for Traverse Calculator Application
+   =========================================== */
+
+/* ========== 1) GLOBAL RESET ========== */
+/* Force half-inch margins on printed pages */
+@page {
+  margin: 0.5in;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+/* ========== 2) SCREEN (NORMAL) STYLES ========== */
+body {
+  font-family: Calibri, sans-serif;
+  margin: 20px;      /* small padding on screen only */
+  color: #333;
+}
+
+h1 {
+  margin-bottom: 16px;
+}
+
+table#inputTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 12px;
+}
+
+table#inputTable th,
+table#inputTable td {
+  border: 1px solid #ccc;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+button {
+  font-family: Calibri, sans-serif;
+  padding: 8px 12px;
+  margin-right: 8px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #f0f0f0;
+}
+
+/* Report text box (scrollable) on screen */
+pre#output {
+  background-color: #f9f9f9;
+  border: 1px solid #ccc;
+  padding: 12px;
+  white-space: pre-wrap;
+  font-family: "Consolas", "Menlo", monospace; /* monospace for alignment on screen */
+  margin-top: 16px;
+  max-height: 400px;
+  overflow: auto;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+/* Canvas on screen: 25% width, aligned left, with minimum height */
+canvas#canvas {
+  display: block;
+  border: 1px solid #ccc;
+  margin: 16px 0 0 0;  /* gap above */
+  width: 25%;         /* 25% of container’s width */
+  min-height: 200px;  /* ensure visible on screen */
+  height: auto;       /* maintain aspect ratio */
+}
+
+/* ========== 3) PRINT-ONLY STYLES ========== */
+@media print {
+  /* Remove any default body margin/padding for printing */
+  html, body {
+    margin: 0;
+    padding: 0;
+  }
+
+  /* Hide all elements by default */
+  body * {
+    visibility: hidden;
+  }
+
+  /* Make only the report text and the canvas visible */
+  #output,
+  #canvas {
+    visibility: visible;
+  }
+
+  /* Force #output to start flush at half-inch top/left (handled by @page),
+     use a monospace font so columns align perfectly */
+  pre#output {
+    font-family: "Consolas", "Menlo", monospace; /* monospace for perfect columns */
+    position: static;         /* normal flow */
+    top: auto;
+    left: auto;
+    width: 100%;              /* fill printable width minus page margins */
+    white-space: pre;         /* preserve exact spacing and line breaks */
+    margin: 0;                /* no extra margin */
+    padding: 0;               /* no padding */
+    background: none;         /* remove screen-only gray background */
+    border: none;             /* remove screen-only border */
+    max-height: none !important;  /* override any height limit */
+    overflow: visible !important; /* show all text */
+    page-break-after: avoid;      /* keep canvas on same page */
+  }
+
+  /* Place the canvas directly below the report, at 25% width, no border */
+  #canvas {
+    position: static;            /* normal flow below #output */
+    display: block;
+    margin: 16px 0 0 0;          /* small gap after report */
+    border: none;                /* no border in print */
+    width: 25%;                  /* 25% of printed page width */
+    height: auto;                /* maintain aspect ratio */
+    page-break-before: avoid;    /* keep on same page as report */
+    page-break-inside: avoid;    /* do not split canvas across pages */
+  }
+}
