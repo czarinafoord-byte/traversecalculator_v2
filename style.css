@@ -5,6 +5,7 @@
 /* ========== 1) GLOBAL RESET ========== */
 /* Force half-inch margins on printed pages */
 @page {
+  size: Letter;
   margin: 0.5in;
 }
 
@@ -50,6 +51,27 @@ button:hover {
   background-color: #f0f0f0;
 }
 
+.bearing-cell input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bearing-adjustments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.bearing-adjustments button {
+  min-width: 44px;
+  margin: 0;
+  padding: 4px 7px;
+  font-size: 12px;
+  line-height: 1.1;
+}
+
 /* Report text box (scrollable) on screen */
 pre#output {
   background-color: #f9f9f9;
@@ -76,50 +98,56 @@ canvas#canvas {
 
 /* ========== 3) PRINT-ONLY STYLES ========== */
 @media print {
-  /* Remove any default body margin/padding for printing */
   html, body {
     margin: 0;
     padding: 0;
+    height: auto;
   }
 
-  /* Hide all elements by default */
-  body * {
-    visibility: hidden;
+  /* Remove controls from the print layout so they do not leave blank space. */
+  h1,
+  #inputTable,
+  button {
+    display: none !important;
   }
 
-  /* Make only the report text and the canvas visible */
-  #output,
-  #canvas {
-    visibility: visible;
-  }
-
-  /* Force #output to start flush at half-inch top/left (handled by @page),
-     use a monospace font so columns align perfectly */
-  pre#output {
-    font-family: "Consolas", "Menlo", monospace; /* monospace for perfect columns */
-    position: static;         /* normal flow */
-    top: auto;
-    left: auto;
-    width: 100%;              /* fill printable width minus page margins */
-    white-space: pre;         /* preserve exact spacing and line breaks */
-    margin: 0;                /* no extra margin */
-    padding: 0;               /* no padding */
-    background: none;         /* remove screen-only gray background */
-    border: none;             /* remove screen-only border */
-    max-height: none !important;  /* override any height limit */
-    overflow: visible !important; /* show all text */
-    page-break-after: avoid;      /* keep canvas on same page */
-  }
-
-  /* Place the canvas directly below the report, at 25% width, no border */
-  #canvas {
-    position: static;            /* normal flow below #output */
+  body::before {
+    content: "Traverse Report v2";
     display: block;
-    margin: 16px 0 0 0;          /* small gap after report */
-    border: none;                /* no border in print */
-    width: 25%;                  /* 25% of printed page width */
-    height: auto;                /* maintain aspect ratio */
-    page-break-before: avoid;    /* keep on same page as report */
-    page-break-inside: avoid;    /* do not split canvas across pages */
+    margin: 0 0 12pt;
+    padding: 0 0 6pt;
+    border-bottom: 2pt solid #1f4e79;
+    color: #1f4e79;
+    font-family: Calibri, Arial, sans-serif;
+    font-size: 18pt;
+    font-weight: 700;
+  }
+
+  pre#output {
+    position: static;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #111;
+    font-family: "Consolas", "Menlo", monospace;
+    font-size: 9pt;
+    line-height: 1.2;
+    white-space: pre;
+    max-height: none !important;
+    overflow: visible !important;
+    page-break-after: avoid;
+  }
+
+  #canvas {
+    position: static;
+    display: block;
+    width: 48%;
+    height: auto;
+    margin: 14pt auto 0;
+    border: 1px solid #b7b7b7;
+    page-break-before: avoid;
+    page-break-inside: avoid;
   }
 }
