@@ -55,6 +55,18 @@ function adjustBearing(input, adjustment) {
   }
 }
 
+// Adjust a bearing by a user-entered D.MMSS angle.
+function adjustBearingByCustomAngle(bearingInput, angleInput, direction) {
+  try {
+    const adjustment = dmsToDecimal(angleInput.value);
+    const adjusted = dmsToDecimal(bearingInput.value) + (direction * adjustment);
+    bearingInput.value = decimalToDmsInput(adjusted);
+  } catch (error) {
+    alert(error.message);
+    angleInput.focus();
+  }
+}
+
 // Convert a true decimal‐degrees value into "D°MM'SS"" format
 function dmsToDMSstr(decimalDeg) {
   let deg = Math.floor(decimalDeg);
@@ -121,6 +133,30 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
   });
 
   cellBearing.appendChild(adjustmentGroup);
+
+  const customAdjustmentGroup = document.createElement('div');
+  customAdjustmentGroup.className = 'custom-bearing-adjustment';
+
+  const customAngleInput = document.createElement('input');
+  customAngleInput.type = 'text';
+  customAngleInput.placeholder = 'Angle D.MMSS';
+  customAngleInput.setAttribute('aria-label', 'Custom bearing adjustment in D.MMSS format');
+  customAdjustmentGroup.appendChild(customAngleInput);
+
+  [
+    { label: '+ Angle', direction: 1 },
+    { label: '- Angle', direction: -1 }
+  ].forEach(({ label, direction }) => {
+    const customButton = document.createElement('button');
+    customButton.type = 'button';
+    customButton.textContent = label;
+    customButton.addEventListener('click', () => {
+      adjustBearingByCustomAngle(bearingInput, customAngleInput, direction);
+    });
+    customAdjustmentGroup.appendChild(customButton);
+  });
+
+  cellBearing.appendChild(customAdjustmentGroup);
 
   // Distance/Arc, Radius, and Direction cells
   [distance, radius, dir].forEach(val => {
