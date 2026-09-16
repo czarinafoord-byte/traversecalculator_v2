@@ -2,6 +2,9 @@
 // script.js
 // ======================
 
+let selectedBearingInput = null;
+let selectedBearingRow = null;
+
 // Convert a D.MMSS value (for example 358.3719) into true decimal degrees.
 // Parse the value as text so floating point rounding cannot turn 58'00" into
 // 57'100", which would later display as 58'40".
@@ -67,6 +70,49 @@ function adjustBearingByCustomAngle(bearingInput, angleInput, direction) {
   }
 }
 
+function updateBearingTools() {
+  const label = document.getElementById('selectedBearingLabel');
+  const customAngleInput = document.getElementById('customAngleInput');
+  const controls = document.querySelectorAll('#bearingTools button');
+  const hasSelection = Boolean(selectedBearingInput && selectedBearingRow);
+
+  controls.forEach(control => {
+    control.disabled = !hasSelection;
+  });
+  customAngleInput.disabled = !hasSelection;
+
+  if (!hasSelection) {
+    label.textContent = 'Select a bearing field below';
+    return;
+  }
+
+  const inputTable = document.getElementById('inputTable');
+  const lineNumber = Array.from(inputTable.rows).indexOf(selectedBearingRow);
+  const bearingValue = selectedBearingInput.value.trim() || 'blank';
+  label.textContent = `Selected line ${lineNumber}: ${bearingValue}`;
+}
+
+function selectBearing(bearingInput, row) {
+  if (selectedBearingRow) {
+    selectedBearingRow.classList.remove('selected-bearing-row');
+  }
+
+  selectedBearingInput = bearingInput;
+  selectedBearingRow = row;
+  selectedBearingRow.classList.add('selected-bearing-row');
+  updateBearingTools();
+}
+
+function clearBearingSelection() {
+  if (selectedBearingRow) {
+    selectedBearingRow.classList.remove('selected-bearing-row');
+  }
+
+  selectedBearingInput = null;
+  selectedBearingRow = null;
+  updateBearingTools();
+}
+
 // Convert a true decimal‐degrees value into "D°MM'SS"" format
 function dmsToDMSstr(decimalDeg) {
   let deg = Math.floor(decimalDeg);
@@ -111,7 +157,7 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
   });
   cellType.appendChild(select);
 
-  // Bearing cell with quick adjustment buttons
+  // Bearing cell. The shared toolbar operates on the selected bearing.
   const cellBearing = row.insertCell();
   cellBearing.className = 'bearing-cell';
 
@@ -119,44 +165,9 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
   bearingInput.type = 'text';
   bearingInput.value = bearing;
   cellBearing.appendChild(bearingInput);
-
-  const adjustmentGroup = document.createElement('div');
-  adjustmentGroup.className = 'bearing-adjustments';
-
-  [180, -180, 90, -90].forEach(adjustment => {
-    const adjustmentButton = document.createElement('button');
-    adjustmentButton.type = 'button';
-    adjustmentButton.textContent = adjustment > 0 ? `+${adjustment}` : `${adjustment}`;
-    adjustmentButton.title = `Adjust bearing by ${adjustment} degrees`;
-    adjustmentButton.addEventListener('click', () => adjustBearing(bearingInput, adjustment));
-    adjustmentGroup.appendChild(adjustmentButton);
-  });
-
-  cellBearing.appendChild(adjustmentGroup);
-
-  const customAdjustmentGroup = document.createElement('div');
-  customAdjustmentGroup.className = 'custom-bearing-adjustment';
-
-  const customAngleInput = document.createElement('input');
-  customAngleInput.type = 'text';
-  customAngleInput.placeholder = 'Angle D.MMSS';
-  customAngleInput.setAttribute('aria-label', 'Custom bearing adjustment in D.MMSS format');
-  customAdjustmentGroup.appendChild(customAngleInput);
-
-  [
-    { label: '+ Angle', direction: 1 },
-    { label: '- Angle', direction: -1 }
-  ].forEach(({ label, direction }) => {
-    const customButton = document.createElement('button');
-    customButton.type = 'button';
-    customButton.textContent = label;
-    customButton.addEventListener('click', () => {
-      adjustBearingByCustomAngle(bearingInput, customAngleInput, direction);
-    });
-    customAdjustmentGroup.appendChild(customButton);
-  });
-
-  cellBearing.appendChild(customAdjustmentGroup);
+  bearingInput.addEventListener('focus', () => selectBearing(bearingInput, row));
+  bearingInput.addEventListener('click', () => selectBearing(bearingInput, row));
+  bearingInput.addEventListener('input', updateBearingTools);
 
   // Distance/Arc, Radius, and Direction cells
   [distance, radius, dir].forEach(val => {
@@ -171,8 +182,18 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
   const cellAction = row.insertCell();
   const btn = document.createElement('button');
   btn.textContent = 'Delete';
-  btn.onclick = () => row.remove();
+  btn.onclick = () => {
+    const deletingSelectedRow = row === selectedBearingRow;
+    row.remove();
+    if (deletingSelectedRow) {
+      clearBearingSelection();
+    } else {
+      updateBearingTools();
+    }
+  };
   cellAction.appendChild(btn);
+
+  selectBearing(bearingInput, row);
 }
 
 // Main calculation and drawing function
@@ -506,6 +527,25 @@ function calculate() {
 window.onload = () => {
   document.getElementById('addLineBtn').addEventListener('click', () => addLine());
   document.getElementById('calcBtn').addEventListener('click', calculate);
+
+  document.querySelectorAll('[data-bearing-adjustment]').forEach(button => {
+    button.addEventListener('click', () => {
+      adjustBearing(selectedBearingInput, Number(button.dataset.bearingAdjustment));
+      updateBearingTools();
+    });
+  });
+
+  const customAngleInput = document.getElementById('customAngleInput');
+  document.getElementById('addCustomAngleBtn').addEventListener('click', () => {
+    adjustBearingByCustomAngle(selectedBearingInput, customAngleInput, 1);
+    updateBearingTools();
+  });
+  document.getElementById('subtractCustomAngleBtn').addEventListener('click', () => {
+    adjustBearingByCustomAngle(selectedBearingInput, customAngleInput, -1);
+    updateBearingTools();
+  });
+
+  updateBearingTools();
 
   // New: print handler
   document.getElementById('printBtn').addEventListener('click', () => {
