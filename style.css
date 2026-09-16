@@ -37,6 +37,13 @@ table#inputTable td {
   border: 1px solid #ccc;
   padding: 6px 8px;
   text-align: left;
+  vertical-align: top;
+}
+
+table#inputTable input,
+table#inputTable select {
+  min-height: 28px;
+  box-sizing: border-box;
 }
 
 button {
@@ -70,6 +77,22 @@ button:hover {
   padding: 4px 7px;
   font-size: 12px;
   line-height: 1.1;
+}
+
+.custom-bearing-adjustment {
+  display: grid;
+  grid-template-columns: minmax(105px, 1fr) auto auto;
+  align-items: center;
+  gap: 4px;
+  margin-top: 5px;
+}
+
+.custom-bearing-adjustment button {
+  margin: 0;
+  padding: 4px 7px;
+  font-size: 12px;
+  line-height: 1.1;
+  white-space: nowrap;
 }
 
 /* Report text box (scrollable) on screen */
