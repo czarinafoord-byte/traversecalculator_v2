@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Traverse Report</title>
+  <!-- Link to external stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Traverse Calculator</h1>
+
+  <table id="inputTable">
+    <tr>
+      <th>Type</th>
+      <th>Bearing (D.MMSS)</th>
+      <th>Dist/Arc</th>
+      <th>Radius</th>
+      <th>Dir</th>
+      <th>Action</th>
+    </tr>
+    <!-- rows get added here via addLine() -->
+  </table>
+
+  <button id="addLineBtn">Add Line</button>
+  <button id="calcBtn">Calculate</button>
+  <button id="printBtn">Print to PDF</button>
+
+  <pre id="output"></pre>
+  <canvas id="canvas" width="600" height="600"></canvas>
+
+  <script src="script.js"></script>
+</body>
+</html>
