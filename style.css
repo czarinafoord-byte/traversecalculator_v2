@@ -64,35 +64,96 @@ button:hover {
   box-sizing: border-box;
 }
 
-.bearing-adjustments {
+.bearing-tools {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid #b9c9d8;
+  border-left: 4px solid #1f4e79;
+  border-radius: 4px;
+  background: #f4f8fb;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.08);
+}
+
+.bearing-tools-heading {
   display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
-  margin-top: 5px;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 9px;
 }
 
-.bearing-adjustments button {
-  min-width: 44px;
-  margin: 0;
-  padding: 4px 7px;
-  font-size: 12px;
-  line-height: 1.1;
+.bearing-tools-heading strong {
+  color: #1f4e79;
+  font-size: 16px;
 }
 
-.custom-bearing-adjustment {
-  display: grid;
-  grid-template-columns: minmax(105px, 1fr) auto auto;
+#selectedBearingLabel {
+  color: #555;
+  font-size: 13px;
+}
+
+.bearing-tools-controls,
+.bearing-presets,
+.bearing-custom {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 5px;
+  gap: 6px;
 }
 
-.custom-bearing-adjustment button {
+.bearing-tools-controls {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 16px;
+}
+
+.bearing-presets,
+.bearing-custom {
+  flex: 0 0 auto;
+}
+
+.bearing-tools button {
   margin: 0;
-  padding: 4px 7px;
-  font-size: 12px;
-  line-height: 1.1;
-  white-space: nowrap;
+  padding: 6px 10px;
+}
+
+.bearing-presets button {
+  flex: 0 0 auto;
+  width: 56px;
+}
+
+.bearing-tools button:disabled,
+.bearing-tools input:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.bearing-custom label {
+  color: #333;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.bearing-custom input {
+  width: 105px;
+  min-height: 30px;
+  padding: 4px 6px;
+  box-sizing: border-box;
+}
+
+.bearing-custom button {
+  width: 72px;
+}
+
+.selected-bearing-row td {
+  background: #edf5fb;
+}
+
+.selected-bearing-row .bearing-cell input {
+  outline: 2px solid #3b78a8;
+  outline-offset: 1px;
 }
 
 /* Report text box (scrollable) on screen */
@@ -129,6 +190,7 @@ canvas#canvas {
 
   /* Remove controls from the print layout so they do not leave blank space. */
   h1,
+  #bearingTools,
   #inputTable,
   button {
     display: none !important;
