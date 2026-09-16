@@ -1,6 +1,7 @@
-# Traverse Calculator
+[readme.md](https://github.com/user-attachments/files/32310593/readme.md)
+# Traverse Calculator v2
 
-A browser based calculator for traverse coordinates, misclosure, error of closure, and area. It supports straight segments and circular curves.
+A browser based calculator for traverse coordinates, misclosure, error of closure, and area. It supports straight segments, circular curves, quick bearing adjustments, and a formatted PDF report.
 
 ## Bearing format
 
@@ -12,6 +13,8 @@ Examples:
 * `175.5800` means 175 degrees, 58 minutes, 0 seconds
 * `265.58` means 265 degrees, 58 minutes, 0 seconds
 * `358.3719` means 358 degrees, 37 minutes, 19 seconds
+
+Use the `+180`, `-180`, `+90`, and `-90` buttons beside a bearing to adjust it. Results wrap around the full 360 degree circle while preserving the minutes and seconds.
 
 ## Run locally
 
