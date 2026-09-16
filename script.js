@@ -25,6 +25,36 @@ function dmsToDecimal(dms) {
   return deg + (min / 60) + (sec / 3600);
 }
 
+// Convert decimal degrees back to a D.MMSS value for the bearing input.
+function decimalToDmsInput(decimalDeg) {
+  const fullCircleSeconds = 360 * 60 * 60;
+  const rawTotalSeconds = Math.round(decimalDeg * 60 * 60);
+  let totalSeconds = rawTotalSeconds;
+  totalSeconds = ((totalSeconds % fullCircleSeconds) + fullCircleSeconds) % fullCircleSeconds;
+
+  if (totalSeconds === 0 && rawTotalSeconds > 0) {
+    totalSeconds = fullCircleSeconds;
+  }
+
+  const deg = Math.floor(totalSeconds / 3600);
+  const remainder = totalSeconds % 3600;
+  const min = Math.floor(remainder / 60);
+  const sec = remainder % 60;
+
+  return `${deg}.${min.toString().padStart(2, '0')}${sec.toString().padStart(2, '0')}`;
+}
+
+// Adjust a bearing while wrapping the result around the 360 degree circle.
+function adjustBearing(input, adjustment) {
+  try {
+    const adjusted = dmsToDecimal(input.value) + adjustment;
+    input.value = decimalToDmsInput(adjusted);
+  } catch (error) {
+    alert(error.message);
+    input.focus();
+  }
+}
+
 // Convert a true decimal‐degrees value into "D°MM'SS"" format
 function dmsToDMSstr(decimalDeg) {
   let deg = Math.floor(decimalDeg);
@@ -69,8 +99,31 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
   });
   cellType.appendChild(select);
 
-  // Next four cells: Bearing, Distance/Arc, Radius, Direction
-  [bearing, distance, radius, dir].forEach(val => {
+  // Bearing cell with quick adjustment buttons
+  const cellBearing = row.insertCell();
+  cellBearing.className = 'bearing-cell';
+
+  const bearingInput = document.createElement('input');
+  bearingInput.type = 'text';
+  bearingInput.value = bearing;
+  cellBearing.appendChild(bearingInput);
+
+  const adjustmentGroup = document.createElement('div');
+  adjustmentGroup.className = 'bearing-adjustments';
+
+  [180, -180, 90, -90].forEach(adjustment => {
+    const adjustmentButton = document.createElement('button');
+    adjustmentButton.type = 'button';
+    adjustmentButton.textContent = adjustment > 0 ? `+${adjustment}` : `${adjustment}`;
+    adjustmentButton.title = `Adjust bearing by ${adjustment} degrees`;
+    adjustmentButton.addEventListener('click', () => adjustBearing(bearingInput, adjustment));
+    adjustmentGroup.appendChild(adjustmentButton);
+  });
+
+  cellBearing.appendChild(adjustmentGroup);
+
+  // Distance/Arc, Radius, and Direction cells
+  [distance, radius, dir].forEach(val => {
     const cell = row.insertCell();
     const input = document.createElement('input');
     input.type = 'text';
@@ -280,8 +333,6 @@ function calculate() {
   report.push(`Error of Closure        : 1:${eoc.toFixed(1)}`);
   report.push(`AREA                    : ${totalArea.toFixed(3)} sq. m. (straight segment added to close traverse)`);
   report.push(`                        = ${(totalArea / 10000).toFixed(6)} Hectares`);
-  report.push('');
-  report.push('      ***********');
 
   output.textContent = report.join('\n');
 
@@ -348,15 +399,15 @@ function calculate() {
     const y2 = toCanvasY(P2.north);
 
     if (line.type === 'Curve') {
-      // Draw the chord in blue
+      // Draw the chord in orange
       ctx.beginPath();
       ctx.moveTo(x1, y1);
       ctx.lineTo(x2, y2);
-      ctx.strokeStyle = 'blue';
+      ctx.strokeStyle = 'orange';
       ctx.lineWidth = 2;
       ctx.stroke();
 
-      // Draw the arc in orange using CAD‐style ctx.arc
+      // Draw the arc in blue using CAD‐style ctx.arc
       const C = curveCenters[i];
       const R = curveRadii[i];
       const A = curveAngles[i];
@@ -389,7 +440,7 @@ function calculate() {
         endAng,
         anticlockwise
       );
-      ctx.strokeStyle = 'orange';
+      ctx.strokeStyle = 'blue';
       ctx.lineWidth   = 2;
       ctx.stroke();
 
