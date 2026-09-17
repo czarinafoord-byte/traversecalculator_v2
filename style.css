@@ -46,6 +46,19 @@ table#inputTable select {
   box-sizing: border-box;
 }
 
+.action-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  white-space: nowrap;
+}
+
+.action-header button {
+  margin: 0;
+  padding: 5px 9px;
+}
+
 button {
   font-family: Calibri, sans-serif;
   padding: 8px 12px;
