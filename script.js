@@ -526,6 +526,7 @@ function calculate() {
 // When the page loads, wire up the buttons
 window.onload = () => {
   document.getElementById('addLineBtn').addEventListener('click', () => addLine());
+  document.getElementById('addLineTopBtn').addEventListener('click', () => addLine());
   document.getElementById('calcBtn').addEventListener('click', calculate);
 
   document.querySelectorAll('[data-bearing-adjustment]').forEach(button => {
