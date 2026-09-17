@@ -141,9 +141,10 @@ function bearingFromDelta(dx, dy) {
 }
 
 // Add a new row to the input table (defaults to a "Straight" leg)
-function addLine(type = 'Straight', bearing = '', distance = '', radius = '', dir = '') {
+function addLine(type = 'Straight', bearing = '', distance = '', radius = '', dir = '', insertAfterRow = null) {
   const inputTable = document.getElementById('inputTable');
-  const row = inputTable.insertRow();
+  const insertionIndex = insertAfterRow ? insertAfterRow.rowIndex + 1 : -1;
+  const row = inputTable.insertRow(insertionIndex);
 
   // Type dropdown cell
   const cellType = row.insertCell();
@@ -178,8 +179,10 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
     cell.appendChild(input);
   });
 
-  // Delete button cell
+  // Row action buttons
   const cellAction = row.insertCell();
+  cellAction.className = 'action-cell';
+
   const btn = document.createElement('button');
   btn.textContent = 'Delete';
   btn.onclick = () => {
@@ -192,6 +195,12 @@ function addLine(type = 'Straight', bearing = '', distance = '', radius = '', di
     }
   };
   cellAction.appendChild(btn);
+
+  const addBelowBtn = document.createElement('button');
+  addBelowBtn.type = 'button';
+  addBelowBtn.textContent = 'Add Line Below';
+  addBelowBtn.onclick = () => addLine('Straight', '', '', '', '', row);
+  cellAction.appendChild(addBelowBtn);
 
   selectBearing(bearingInput, row);
 }
@@ -526,7 +535,6 @@ function calculate() {
 // When the page loads, wire up the buttons
 window.onload = () => {
   document.getElementById('addLineBtn').addEventListener('click', () => addLine());
-  document.getElementById('addLineTopBtn').addEventListener('click', () => addLine());
   document.getElementById('calcBtn').addEventListener('click', calculate);
 
   document.querySelectorAll('[data-bearing-adjustment]').forEach(button => {
